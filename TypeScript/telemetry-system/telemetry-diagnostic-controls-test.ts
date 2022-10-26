@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import 'mocha';
-import TelemetryDiagnosticControls from '../telemetry-system/telemetry-diagnostic-controls';
+import TelemetryDiagnosticControls from './telemetry-diagnostic-controls';
 
 describe('Telemetry System', () => {
 

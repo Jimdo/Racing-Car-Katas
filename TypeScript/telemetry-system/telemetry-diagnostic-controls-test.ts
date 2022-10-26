@@ -55,5 +55,20 @@ describe('Telemetry System', () => {
 			expect(controls.checkTransmission).to.throw();
 		});
 
+		it('CheckTransmission should retry to connect', () => {
+			let retryCount = 0;
+			const client = {
+				...clientMock,
+				getOnlineStatus: () => retryCount == 3,
+				connect: (_: string) => { retryCount++ },
+			} as any as TelemetryClient;
+
+			const controls = new TelemetryDiagnosticControls(client);
+
+			controls.checkTransmission();
+
+			expect(retryCount).to.eql(3);
+		});
+
 	});
 });

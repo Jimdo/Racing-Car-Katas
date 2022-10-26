@@ -22,10 +22,11 @@ export default class TelemetryDiagnosticControls {
 
 		this.telemetryClient.disconnect();
 
-		let retryLeft = 3;
-		while (this.telemetryClient.getOnlineStatus() === false && retryLeft > 0) {
+		for (let retries = 0; retries < 2; retries++) {
 			this.telemetryClient.connect(this.diagnosticChannelConnectionString);
-			retryLeft -= 1;
+			if (this.telemetryClient.getOnlineStatus()) {
+				break;
+			}
 		}
 
 		if (this.telemetryClient.getOnlineStatus() === false) {

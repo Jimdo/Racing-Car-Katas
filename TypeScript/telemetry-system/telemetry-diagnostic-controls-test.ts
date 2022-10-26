@@ -7,51 +7,49 @@ describe('Telemetry System', () => {
 
 	describe('TelemetryDiagnosticControls', () => {
 
+		const clientMock = {
+			diagnosticMessage: () => undefined,
+			getOnlineStatus: () => true,
+			connect: (_: string) => undefined,
+			receive: () => undefined,
+			send: (_: string) => undefined,
+			disconnect: () => undefined,
+		} as any as TelemetryClient;
+
 		it('CheckTransmission should send a diagnostic message', () => {
 			let message = '';
 			const client = {
-				diagnosticMessage: () => 'AT#UD',
-				getOnlineStatus: () => true,
-				connect: (_: string) => undefined,
-				receive: () => undefined,
+				...clientMock,
+				diagnosticMessage: () => 'THE_DIAGNOSTIC_MESSAGE',
 				send: (m: string) => { message = m },
-				disconnect: () => undefined,
 			} as any as TelemetryClient;
 
 			const controls = new TelemetryDiagnosticControls(client);
+
 			controls.checkTransmission();
 
-			let exp = 'AT#UD';
-
-			expect(message).to.eql(exp);
+			expect(message).to.eql('THE_DIAGNOSTIC_MESSAGE');
 		});
 
 		it('CheckTransmission should receive the correct status message response', () => {
 			const client = {
-				diagnosticMessage: () => 'AT#UD',
-				getOnlineStatus: () => true,
-				connect: (_: string) => undefined,
+				...clientMock,
 				receive: () => 'hello all',
-				send: () => '',
-				disconnect: () => undefined,
 			} as any as TelemetryClient;
+
 			const controls = new TelemetryDiagnosticControls(client);
+
 			controls.checkTransmission();
 
-			let exp = "hello all";
-
-			expect(controls.readDiagnosticInfo()).to.eql(exp);
+			expect(controls.readDiagnosticInfo()).to.eql("hello all");
 		});
 
 		it('CheckTransmission should throw if client is not connected', () => {
 			const client = {
-				diagnosticMessage: () => 'AT#UD',
+				...clientMock,
 				getOnlineStatus: () => false,
-				connect: (_: string) => undefined,
-				receive: () => 'hello all',
-				send: () => '',
-				disconnect: () => undefined,
 			} as any as TelemetryClient;
+
 			const controls = new TelemetryDiagnosticControls(client);
 
 			expect(controls.checkTransmission).to.throw();

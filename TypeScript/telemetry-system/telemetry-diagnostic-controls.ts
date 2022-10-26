@@ -2,13 +2,10 @@ import TelemetryClient from './telemetry-client';
 
 export default class TelemetryDiagnosticControls {
 	private diagnosticChannelConnectionString: string;
-
-	private telemetryClient: TelemetryClient;
 	private diagnosticInfo: string;
 
-	constructor() {
+	constructor(private readonly telemetryClient: TelemetryClient) {
 		this.diagnosticChannelConnectionString = '*111#';
-		this.telemetryClient = new TelemetryClient();
 		this.diagnosticInfo = '';
 	}
 
@@ -21,7 +18,7 @@ export default class TelemetryDiagnosticControls {
 	}
 
 	public checkTransmission() {
-		this.diagnosticInfo = '';
+		this.writeDiagnosticInfo('')
 
 		this.telemetryClient.disconnect();
 
@@ -36,6 +33,6 @@ export default class TelemetryDiagnosticControls {
 		}
 
 		this.telemetryClient.send(this.telemetryClient.diagnosticMessage());
-		this.diagnosticInfo = this.telemetryClient.receive();
+		this.writeDiagnosticInfo(this.telemetryClient.receive());
 	}
 }

@@ -19,21 +19,24 @@ export default class TelemetryDiagnosticControls {
 
 	public checkTransmission() {
 		this.writeDiagnosticInfo('')
-
-		this.telemetryClient.disconnect();
-
-		for (let retries = 0; retries < 2; retries++) {
-			this.telemetryClient.connect(this.diagnosticChannelConnectionString);
-			if (this.telemetryClient.getOnlineStatus()) {
-				break;
-			}
-		}
-
-		if (this.telemetryClient.getOnlineStatus() === false) {
-			throw new Error('Unable to connect');
-		}
+		this.connect();
 
 		this.telemetryClient.send(this.telemetryClient.diagnosticMessage());
 		this.writeDiagnosticInfo(this.telemetryClient.receive());
+	}
+
+	private connect() {
+		this.telemetryClient.disconnect();
+
+		for (let retries = 0; retries < 3; retries++) {
+			console.log('fored!');
+			this.telemetryClient.connect(this.diagnosticChannelConnectionString);
+			if (this.telemetryClient.getOnlineStatus()) {
+				return;
+			}
+
+		}
+
+		throw new Error('Unable to connect');
 	}
 }

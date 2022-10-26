@@ -59,13 +59,13 @@ describe('Telemetry System', () => {
 			let retryCount = 0;
 			const client = {
 				...clientMock,
-				getOnlineStatus: () => retryCount == 3,
-				connect: (_: string) => { retryCount++ },
+				getOnlineStatus: () => false,
+				connect: (_: string) => { console.log('connecting'); retryCount++ },
 			} as any as TelemetryClient;
 
 			const controls = new TelemetryDiagnosticControls(client);
 
-			controls.checkTransmission();
+			expect(controls.checkTransmission).to.throw();
 
 			expect(retryCount).to.eql(3);
 		});
